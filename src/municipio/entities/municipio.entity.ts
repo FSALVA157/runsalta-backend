@@ -1,21 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Nacionalidad {
+export class Municipio {
   @PrimaryGeneratedColumn()
-  id_nacionalidad: number;
+  id_municipio: number;
 
   @Column('varchar', {
     length: 100,
     nullable: false,
     unique: true,
   })
-  pais: string;
+  municipio: string;
 
-  @Column('varchar', {
-    length: 100,
+  @Column('int', {
     nullable: false,
-    unique: true,
   })
-  nacionalidad: string;
+  provincia_id: number;
 }

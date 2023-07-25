@@ -172,7 +172,7 @@ export class Legajo {
   sexo: string;
 
   @Column('varchar', {
-    length: 255,
+    length: 100,
     nullable: true,
   })
   telefono: string;

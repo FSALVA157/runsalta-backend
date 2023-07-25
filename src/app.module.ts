@@ -6,6 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LegajoModule } from './legajo/legajo.module';
 import { CommonModule } from './common/common.module';
 import { NacionalidadModule } from './nacionalidad/nacionalidad.module';
+import { MunicipioModule } from './municipio/municipio.module';
+import { ProvinciaModule } from './provincia/provincia.module';
+import { AcompanianteModule } from './acompaniante/acompaniante.module';
 
 @Module({
   imports: [
@@ -23,6 +26,9 @@ import { NacionalidadModule } from './nacionalidad/nacionalidad.module';
     LegajoModule,
     CommonModule,
     NacionalidadModule,
+    MunicipioModule,
+    ProvinciaModule,
+    AcompanianteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
