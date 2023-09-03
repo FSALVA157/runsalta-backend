@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsInt, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateProvinciaDto {
   @IsString()
@@ -7,4 +7,8 @@ export class CreateProvinciaDto {
       'La provincia debe tener entre $constraint1 y $constraint2 caracteres',
   })
   provincia: string;
+
+  @IsOptional()
+  @IsInt()
+  pais_id: number;
 }

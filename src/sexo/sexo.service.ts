@@ -1,25 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateNacionalidadDto } from './dto/create-nacionalidad.dto';
-import { UpdateNacionalidadDto } from './dto/update-nacionalidad.dto';
+import { CreateSexoDto } from './dto/create-sexo.dto';
+import { UpdateSexoDto } from './dto/update-sexo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Nacionalidad } from './entities/nacionalidad.entity';
+import { Sexo } from './entities/sexo.entity';
 import { Repository } from 'typeorm';
 import { handleDBExceptions } from 'src/common/filters/handle-exception';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
-export class NacionalidadService {
+export class SexoService {
   constructor(
-    @InjectRepository(Nacionalidad)
-    private readonly nacionalidadRepository: Repository<Nacionalidad>,
+    @InjectRepository(Sexo)
+    private readonly sexoRepository: Repository<Sexo>,
   ) {}
-  async create(createNacionalidadDto: CreateNacionalidadDto) {
+  async create(createSexoDto: CreateSexoDto) {
     try {
-      const new_nacionalidad = this.nacionalidadRepository.create(
-        createNacionalidadDto,
-      );
-      await this.nacionalidadRepository.save(new_nacionalidad);
-      return new_nacionalidad;
+      const new_pais = this.sexoRepository.create(createSexoDto);
+      await this.sexoRepository.save(new_pais);
+      return new_pais;
     } catch (error) {
       handleDBExceptions(error);
     }
@@ -28,10 +26,12 @@ export class NacionalidadService {
   async findAll(paginationDto: PaginationDto) {
     try {
       const { limit = 0, offset = 0 } = paginationDto;
-      return await this.nacionalidadRepository.findAndCount({
+      const res = await this.sexoRepository.find({
         take: limit,
         skip: offset,
       });
+
+      return res;
     } catch (error) {
       handleDBExceptions(error);
     }
@@ -39,23 +39,23 @@ export class NacionalidadService {
 
   async findOne(id: number) {
     try {
-      return await this.nacionalidadRepository.findOneOrFail({
-        where: { id_nacionalidad: id },
+      return await this.sexoRepository.findOneOrFail({
+        where: { id_sexo: id },
       });
     } catch (error) {
       handleDBExceptions(error);
     }
   }
 
-  async update(id: number, updateNacionalidadDto: UpdateNacionalidadDto) {
+  async update(id: number, updateSexoDto: UpdateSexoDto) {
     try {
-      const res = await this.nacionalidadRepository.update(
-        { id_nacionalidad: id },
-        updateNacionalidadDto,
+      const res = await this.sexoRepository.update(
+        { id_sexo: id },
+        updateSexoDto,
       );
       if (res.affected == 0)
         throw new NotFoundException(
-          'Error No se Actualizo ningún Registro Nacionalidad',
+          'Error No se Actualizo ningún Registro Sexo',
         );
       return res;
     } catch (error) {
@@ -65,8 +65,8 @@ export class NacionalidadService {
 
   async remove(id: number) {
     try {
-      const res = await this.nacionalidadRepository.softDelete({
-        id_nacionalidad: id,
+      const res = await this.sexoRepository.softDelete({
+        id_sexo: id,
       });
       if (res.affected == 0) throw new Error('No existe el registro a borrar');
       return {

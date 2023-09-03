@@ -11,6 +11,9 @@ export const handleDBExceptions = (error: any) => {
   if (error.code === '23505') {
     throw new BadRequestException(error.detail);
   }
+  if (error.code === 'ER_DUP_ENTRY') {
+    throw new BadRequestException(error.message);
+  }
 
   if (error.response.statusCode === 404) {
     throw new NotFoundException(error.message);

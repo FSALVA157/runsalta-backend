@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsDateString,
   IsInt,
   IsOptional,
   IsString,
@@ -13,11 +14,22 @@ export class CreateLegajoDto {
   activo: boolean;
 
   @IsString()
-  @Length(5, 255, {
+  @Length(2, 255, {
+    message:
+      'El apellido debe tener entre $constraint1 y $constraint2 caracteres',
+  })
+  apellido: string;
+
+  @IsString()
+  @Length(2, 255, {
     message:
       'El nombre debe tener entre $constraint1 y $constraint2 caracteres',
   })
-  apellido_nombre: string;
+  nombre: string;
+
+  @IsOptional()
+  @IsDateString()
+  fecha_nacimiento: Date;
 
   @IsOptional()
   @IsString()
@@ -190,13 +202,8 @@ export class CreateLegajoDto {
   @IsInt()
   se_interv_en_su_gestion: number;
 
-  @IsOptional()
-  @IsString()
-  @Length(2, 255, {
-    message:
-      'El campo sexo debe tener entre $constraint1 y $constraint2 caracteres',
-  })
-  sexo: string;
+  @IsInt()
+  sexo_id: number;
 
   @IsOptional()
   @IsString()
@@ -227,44 +234,40 @@ export class CreateLegajoDto {
   tipo_documento: string;
 
   @IsInt()
-  id_usuario_alta: number;
+  usuario_alta_id: number;
 
   @IsInt()
-  id_usuario_modif: number;
-
-  @IsOptional()
-  @IsInt()
-  id_local: number;
+  usuario_modif_id: number;
 
   @IsOptional()
   @IsInt()
-  id_localidad: number;
+  localidad_id: number;
 
   @IsOptional()
   @IsInt()
-  id_municipio: number;
+  municipio_id: number;
 
   @IsOptional()
   @IsInt()
-  id_nacionalidad: number;
+  nacionalidad_id: number;
 
   @IsOptional()
   @IsInt()
-  id_obra_social: number;
+  obra_social_id: number;
 
   @IsOptional()
   @IsInt()
-  id_pais_nac: number;
+  pais_id: number;
 
   @IsOptional()
   @IsInt()
-  id_provincia: number;
+  provincia_id: number;
 
   @IsOptional()
   @IsInt()
-  id_acompaniante: number;
+  acompaniante_id: number;
 
   @IsOptional()
   @IsInt()
-  id_zonal: number;
+  equipot_id: number;
 }

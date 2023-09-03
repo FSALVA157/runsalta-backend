@@ -3,9 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ProvinciaService } from './provincia.service';
 import { CreateProvinciaDto } from './dto/create-provincia.dto';
@@ -22,7 +23,10 @@ export class ProvinciaController {
   }
 
   @Get()
-  findAll(paginationDto: PaginationDto) {
+  findAll(
+    @Query()
+    paginationDto: PaginationDto,
+  ) {
     return this.provinciaService.findAll(paginationDto);
   }
 
@@ -31,7 +35,7 @@ export class ProvinciaController {
     return this.provinciaService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateProvinciaDto: UpdateProvinciaDto,

@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  Put,
 } from '@nestjs/common';
 import { MunicipioService } from './municipio.service';
 import { CreateMunicipioDto } from './dto/create-municipio.dto';
@@ -22,7 +24,10 @@ export class MunicipioController {
   }
 
   @Get()
-  findAll(paginationDto: PaginationDto) {
+  findAll(
+    @Query()
+    paginationDto: PaginationDto,
+  ) {
     return this.municipioService.findAll(paginationDto);
   }
 
@@ -31,7 +36,7 @@ export class MunicipioController {
     return this.municipioService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateMunicipioDto: UpdateMunicipioDto,

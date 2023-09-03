@@ -5,10 +5,15 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LegajoModule } from './legajo/legajo.module';
 import { CommonModule } from './common/common.module';
-import { NacionalidadModule } from './nacionalidad/nacionalidad.module';
+import { PaisModule } from './pais/pais.module';
 import { MunicipioModule } from './municipio/municipio.module';
 import { ProvinciaModule } from './provincia/provincia.module';
 import { AcompanianteModule } from './acompaniante/acompaniante.module';
+import { LocalidadModule } from './localidad/localidad.module';
+import { SexoModule } from './sexo/sexo.module';
+import { EquiposTModule } from './equipos-t/equipos-t.module';
+import { ServiciosLModule } from './servicios-l/servicios-l.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,10 +30,15 @@ import { AcompanianteModule } from './acompaniante/acompaniante.module';
     }),
     LegajoModule,
     CommonModule,
-    NacionalidadModule,
+    PaisModule,
     MunicipioModule,
     ProvinciaModule,
     AcompanianteModule,
+    LocalidadModule,
+    SexoModule,
+    EquiposTModule,
+    ServiciosLModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

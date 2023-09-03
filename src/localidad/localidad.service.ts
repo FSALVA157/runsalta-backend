@@ -1,24 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateLegajoDto } from './dto/create-legajo.dto';
-import { UpdateLegajoDto } from './dto/update-legajo.dto';
-import { Legajo } from './entities/legajo.entity';
+import { CreateLocalidadDto } from './dto/create-localidad.dto';
+import { UpdateLocalidadDto } from './dto/update-localidad.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Localidad } from './entities/localidad.entity';
 import { Repository } from 'typeorm';
 import { handleDBExceptions } from 'src/common/filters/handle-exception';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
-export class LegajoService {
+export class LocalidadService {
   constructor(
-    @InjectRepository(Legajo)
-    private readonly legajoRepository: Repository<Legajo>,
+    @InjectRepository(Localidad)
+    private readonly localidadRepository: Repository<Localidad>,
   ) {}
-
-  async create(createLegajoDto: CreateLegajoDto) {
+  async create(createLocalidadDto: CreateLocalidadDto) {
     try {
-      const new_legajo = this.legajoRepository.create(createLegajoDto);
-      await this.legajoRepository.save(new_legajo);
-      return new_legajo;
+      const new_localidad = this.localidadRepository.create(createLocalidadDto);
+      await this.localidadRepository.save(new_localidad);
+      return new_localidad;
     } catch (error) {
       handleDBExceptions(error);
     }
@@ -27,21 +26,10 @@ export class LegajoService {
   async findAll(paginationDto: PaginationDto) {
     try {
       const { limit = 0, offset = 0 } = paginationDto;
-      const data = await this.legajoRepository.findAndCount({
+      return await this.localidadRepository.findAndCount({
         take: limit,
         skip: offset,
       });
-      const data_nueva = data[0].map((legajo) => {
-        return {
-          ...legajo,
-          sexo: legajo.sexo.sexo,
-          equipo_territorial: legajo.equipo_territorial.nombre,
-        };
-      });
-      return {
-        data: data_nueva,
-        total: data[1],
-      };
     } catch (error) {
       handleDBExceptions(error);
     }
@@ -49,23 +37,23 @@ export class LegajoService {
 
   async findOne(id: number) {
     try {
-      return await this.legajoRepository.findOneOrFail({
-        where: { id_legajo: id },
+      return await this.localidadRepository.findOneOrFail({
+        where: { id_localidad: id },
       });
     } catch (error) {
       handleDBExceptions(error);
     }
   }
 
-  async update(id: number, updateLegajoDto: UpdateLegajoDto) {
+  async update(id: number, updateLocalidadDto: UpdateLocalidadDto) {
     try {
-      const res = await this.legajoRepository.update(
-        { id_legajo: id },
-        updateLegajoDto,
+      const res = await this.localidadRepository.update(
+        { id_localidad: id },
+        updateLocalidadDto,
       );
       if (res.affected == 0)
         throw new NotFoundException(
-          'Error No se Actualizo ningún Registro Legajo',
+          'Error No se Actualizo ningún Registro Localidad',
         );
       return res;
     } catch (error) {
@@ -75,7 +63,9 @@ export class LegajoService {
 
   async remove(id: number) {
     try {
-      const res = await this.legajoRepository.softDelete({ id_legajo: id });
+      const res = await this.localidadRepository.softDelete({
+        id_localidad: id,
+      });
       if (res.affected == 0) throw new Error('No existe el registro a borrar');
       return {
         ...res,

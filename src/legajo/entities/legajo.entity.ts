@@ -1,8 +1,16 @@
+import { EquiposT } from 'src/equipos-t/entities/equipos-t.entity';
+import { Localidad } from 'src/localidad/entities/localidad.entity';
+import { Municipio } from 'src/municipio/entities/municipio.entity';
+import { Pais } from 'src/pais/entities/pais.entity';
+import { Provincia } from 'src/provincia/entities/provincia.entity';
+import { Sexo } from 'src/sexo/entities/sexo.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,7 +29,18 @@ export class Legajo {
     length: 255,
     nullable: false,
   })
-  apellido_nombre: string;
+  apellido: string;
+
+  @Column('varchar', {
+    length: 255,
+    nullable: false,
+  })
+  nombre: string;
+
+  @Column('datetime', {
+    nullable: true,
+  })
+  fecha_nacimiento: Date;
 
   @Column('varchar', {
     length: 255,
@@ -165,11 +184,19 @@ export class Legajo {
   })
   se_interv_en_su_gestion: number;
 
-  @Column('varchar', {
-    length: 255,
-    nullable: true,
+  @Column('int', {
+    nullable: false,
   })
-  sexo: string;
+  sexo_id: number;
+
+  @ManyToOne(() => Sexo, {
+    eager: true,
+  })
+  @JoinColumn({
+    name: 'sexo_id',
+    referencedColumnName: 'id_sexo',
+  })
+  sexo: Sexo;
 
   @Column('varchar', {
     length: 100,
@@ -197,57 +224,97 @@ export class Legajo {
   @Column('int', {
     nullable: false,
   })
-  id_usuario_alta: number;
+  usuario_alta_id: number;
 
   @Column('int', {
     nullable: false,
   })
-  id_usuario_modif: number;
+  usuario_modif_id: number;
 
   @Column('int', {
     nullable: true,
   })
-  id_local: number;
+  localidad_id: number;
+
+  @ManyToOne(() => Localidad)
+  @JoinColumn({
+    name: 'localidad_id',
+    referencedColumnName: 'id_localidad',
+  })
+  localidad: Localidad;
 
   @Column('int', {
     nullable: true,
   })
-  id_localidad: number;
+  municipio_id: number;
+
+  @ManyToOne(() => Municipio)
+  @JoinColumn({
+    name: 'municipio_id',
+    referencedColumnName: 'id_municipio',
+  })
+  municipio: Municipio;
 
   @Column('int', {
     nullable: true,
   })
-  id_municipio: number;
+  nacionalidad_id: number;
+
+  @ManyToOne(() => Pais)
+  @JoinColumn({
+    name: 'nacionalidad_id',
+    referencedColumnName: 'id_pais',
+  })
+  nacionalidad: Pais;
 
   @Column('int', {
     nullable: true,
   })
-  id_nacionalidad: number;
+  obra_social_id: number;
+
+  @Column('int', {
+    nullable: true,
+    default: 9,
+  })
+  pais_id: number;
+
+  @ManyToOne(() => Pais)
+  @JoinColumn({
+    name: 'pais_id',
+    referencedColumnName: 'id_pais',
+  })
+  pais: Pais;
 
   @Column('int', {
     nullable: true,
   })
-  id_obra_social: number;
+  provincia_id: number;
+
+  @ManyToOne(() => Provincia)
+  @JoinColumn({
+    name: 'provincia_id',
+    referencedColumnName: 'id_provincia',
+  })
+  provincia: Provincia;
 
   @Column('int', {
     nullable: true,
   })
-  id_pais_nac: number;
+  acompaniante_id: number;
 
   @Column('int', {
     nullable: true,
   })
-  id_provincia: number;
+  equipot_id: number;
 
-  @Column('int', {
-    nullable: true,
+  @ManyToOne(() => EquiposT, {
+    eager: true,
   })
-  id_acompaniante: number;
-
-  @Column('int', {
-    nullable: true,
+  @JoinColumn({
+    name: 'equipot_id',
+    referencedColumnName: 'id_equipo',
   })
-  id_zonal: number;
+  equipo_territorial: EquiposT;
 
   @CreateDateColumn()
   fecha_alta: Date;

@@ -1,6 +1,6 @@
 import { IsString, Length } from 'class-validator';
 
-export class CreateNacionalidadDto {
+export class CreatePaisDto {
   @IsString()
   @Length(2, 100, {
     message: 'El pais debe tener entre $constraint1 y $constraint2 caracteres',

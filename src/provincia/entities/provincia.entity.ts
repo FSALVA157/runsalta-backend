@@ -1,4 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Localidad } from 'src/localidad/entities/localidad.entity';
+import { Municipio } from 'src/municipio/entities/municipio.entity';
+import { Pais } from 'src/pais/entities/pais.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Provincia {
@@ -11,4 +21,27 @@ export class Provincia {
     unique: true,
   })
   provincia: string;
+
+  @Column('int', {
+    nullable: true,
+    default: 9,
+  })
+  pais_id: number;
+
+  @ManyToOne(() => Pais)
+  @JoinColumn({
+    name: 'pais_id',
+    referencedColumnName: 'id_pais',
+  })
+  pais: Pais;
+
+  @OneToMany(() => Municipio, (municipio) => municipio.provincia, {
+    eager: true,
+  })
+  municipios: Municipio[];
+
+  @OneToMany(() => Localidad, (localidad) => localidad.provincia, {
+    eager: true,
+  })
+  localidades: Localidad[];
 }
