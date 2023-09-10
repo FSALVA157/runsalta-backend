@@ -8,30 +8,34 @@ import { handleDBExceptions } from 'src/common/filters/handle-exception';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginUsuarioDto } from './dto';
+import { IJwtPayload } from './interfaces/payload-jwt.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Usuario)
     private readonly userRepository: Repository<Usuario>,
+    private readonly jwtService: JwtService,
   ) {}
   async create(createUsuarioDto: CreateUsuarioDto) {
     try {
       const { password, ...usuarioData } = createUsuarioDto;
 
-      const new_legajo = this.userRepository.create({
+      const new_user = this.userRepository.create({
         password: bcrypt.hashSync(password, 10),
         ...usuarioData,
       });
-      await this.userRepository.save(new_legajo);
+      await this.userRepository.save(new_user);
       const data_filtrada = {
-        nombre: new_legajo.nombre,
-        apellido: new_legajo.apellido,
-        username: new_legajo.username,
-        dni: new_legajo.dni,
+        id: new_user.id_usuario,
+        nombre: new_user.nombre,
+        apellido: new_user.apellido,
+        username: new_user.username,
+        dni: new_user.dni,
+        token: this.getJwtToken({ id: new_user.id_usuario }),
       };
       return data_filtrada;
-      //TODO: return JWT
     } catch (error) {
       handleDBExceptions(error);
     }
@@ -47,6 +51,7 @@ export class AuthService {
           username,
         },
         select: {
+          id_usuario: true,
           username: true,
           password: true,
         },
@@ -58,10 +63,23 @@ export class AuthService {
         throw new NotFoundException('Credenciales no validas(clave)');
       }
 
-      return user;
+      console.log('datos de usuario en login', user);
+
+      return {
+        ...user,
+        token: this.getJwtToken({ id: +user.id_usuario }),
+      };
     } catch (error) {
       handleDBExceptions(error);
     }
+  }
+
+  //metodo que genera un token nuevo
+  private getJwtToken(payload: IJwtPayload) {
+    //generamos el token la configuracion es la establecida en el JwtModule pero aqui
+    //podriamos sobreescribirla
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
   async findAll(paginationDto: PaginationDto) {

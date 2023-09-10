@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { LoginUsuarioDto, CreateUsuarioDto, UpdateUsuarioDto } from './dto/';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -29,7 +31,16 @@ export class AuthController {
     return this.usuarioService.login(loginUsuarioDto);
   }
 
-  @Get()
+  @Get('private')
+  @UseGuards(AuthGuard())
+  testPrivateRoute() {
+    return {
+      ok: true,
+      message: 'Saludo desde la Ruta Privada',
+    };
+  }
+
+  @Get('usuarios')
   findAll(
     @Query()
     paginationDto: PaginationDto,
@@ -47,8 +58,8 @@ export class AuthController {
   //   return this.usuarioService.update(+id, updateUsuarioDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usuarioService.remove(+id);
-  // }
+  @Delete('usuario/:id')
+  remove(@Param('id') id: string) {
+    return this.usuarioService.remove(+id);
+  }
 }
