@@ -8,11 +8,14 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { LoginUsuarioDto, CreateUsuarioDto, UpdateUsuarioDto } from './dto/';
 import { AuthGuard } from '@nestjs/passport';
+import { GetRawHeaders, GetUser } from './decorators';
+import { Usuario } from './entities/usuario.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -33,10 +36,20 @@ export class AuthController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  testPrivateRoute() {
+  testPrivateRoute(
+    @GetUser()
+    user: Usuario,
+    @GetUser('roles')
+    roles: Array<string>,
+    @GetRawHeaders()
+    rawHeaders: string[],
+  ) {
     return {
       ok: true,
       message: 'Saludo desde la Ruta Privada',
+      user,
+      roles,
+      rawHeaders,
     };
   }
 
