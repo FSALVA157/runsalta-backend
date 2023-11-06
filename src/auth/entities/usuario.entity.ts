@@ -46,6 +46,19 @@ export class Usuario {
   })
   nombre: string;
 
+  @Column('varchar', {
+    length: 200,
+    nullable: false,
+    unique: true,
+  })
+  email: string;
+
+  @Column('varchar', {
+    nullable: true,
+    unique: true,
+  })
+  reset_token: string;
+
   @Column('simple-array')
   roles: string[];
 

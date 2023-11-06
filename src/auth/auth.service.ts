@@ -10,6 +10,8 @@ import * as bcrypt from 'bcrypt';
 import { LoginUsuarioDto } from './dto';
 import { IJwtPayload } from './interfaces/payload-jwt.interface';
 import { JwtService } from '@nestjs/jwt';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ExecuteResetPasswordDto } from './dto/execute-reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,56 @@ export class AuthService {
     private readonly userRepository: Repository<Usuario>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async refreshToken(data: any) {
+    return {
+      id_usuario: data.id_usuario,
+      username: data.username,
+      token: this.getJwtToken({ id: +data.id_usuario }),
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    const { email } = resetPasswordDto;
+    try {
+      const user: Usuario = await this.userRepository.findOneByOrFail({
+        email,
+      });
+      const reset_token_auxiliar = this.getResetPassJwtToken({
+        id: user.id_usuario,
+      });
+      await this.update(user.id_usuario, {
+        reset_token: reset_token_auxiliar,
+      });
+      //TODO: enviar email al usuario con el enlace
+      /**
+       * Ejemplo de URL que debe armarse para enviar por email
+       * http://localhost:3000/api/auth/open-reset-password?reset_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5MjczNzI3LCJleHAiOjE2OTkyNzU1Mjd9.yGYY1l6ZqkT1dy6HvHEjjKDvKaJ0WdDYtKRvyafQnug
+       */
+    } catch (error) {
+      throw new NotFoundException(
+        `El email ${email} no corresponde a un usuario activo`,
+      );
+    }
+  }
+
+  async executeResetPassword(
+    executeResetPasswordDto: ExecuteResetPasswordDto,
+    usuario: Usuario,
+  ) {
+    try {
+      const { new_password } = executeResetPasswordDto;
+
+      return await this.update(usuario.id_usuario, {
+        reset_token: null,
+        password: bcrypt.hashSync(new_password, 10),
+        //password: new_password,
+      });
+    } catch (error) {
+      handleDBExceptions(error);
+    }
+  }
+
   async create(createUsuarioDto: CreateUsuarioDto) {
     try {
       const { password, ...usuarioData } = createUsuarioDto;
@@ -63,10 +115,11 @@ export class AuthService {
         throw new NotFoundException('Credenciales no validas(clave)');
       }
 
-      console.log('datos de usuario en login', user);
+      //      console.log('datos de usuario en login', user);
 
       return {
-        ...user,
+        id_usuario: user.id_usuario,
+        username: user.username,
         token: this.getJwtToken({ id: +user.id_usuario }),
       };
     } catch (error) {
@@ -79,6 +132,16 @@ export class AuthService {
     //generamos el token la configuracion es la establecida en el JwtModule pero aqui
     //podriamos sobreescribirla
     const token = this.jwtService.sign(payload);
+    return token;
+  }
+
+  //metodo que genera un token nuevo
+  private getResetPassJwtToken(payload: IJwtPayload) {
+    //generamos el token la configuracion es la establecida en el JwtModule pero aqui
+    //podriamos sobreescribirla
+    const token = this.jwtService.sign(payload, {
+      expiresIn: '30m',
+    });
     return token;
   }
 

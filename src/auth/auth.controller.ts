@@ -3,19 +3,24 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   UseGuards,
-  Req,
+  Put,
+  Render,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { LoginUsuarioDto, CreateUsuarioDto, UpdateUsuarioDto } from './dto/';
 import { AuthGuard } from '@nestjs/passport';
-import { GetRawHeaders, GetUser } from './decorators';
+import { Auth, GetRawHeaders, GetUser } from './decorators';
 import { Usuario } from './entities/usuario.entity';
+import { UserRoleGuard } from './guards/user-role.guard';
+import { RoleProtected } from './decorators/role-protected.decorator';
+import { ValidRoles } from './interfaces';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ExecuteResetPasswordDto } from './dto/execute-reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +39,46 @@ export class AuthController {
     return this.usuarioService.login(loginUsuarioDto);
   }
 
+  @Get('refresh-token')
+  @UseGuards(AuthGuard())
+  refreshToken(
+    @GetUser()
+    user: Usuario,
+  ) {
+    return this.usuarioService.refreshToken(user);
+  }
+
+  @Put('reset-password')
+  resetPassword(
+    @Body()
+    resetPasswordDto: ResetPasswordDto,
+  ) {
+    return this.usuarioService.resetPassword(resetPasswordDto);
+  }
+
+  @Put('execute-reset-password')
+  @UseGuards(AuthGuard())
+  executeResetPassword(
+    @GetUser()
+    user: Usuario,
+    @Body()
+    executeResetPasswordDto: ExecuteResetPasswordDto,
+  ) {
+    return this.usuarioService.executeResetPassword(
+      executeResetPasswordDto,
+      user,
+    );
+  }
+
+  @Get('open-reset-password')
+  @Render('reset-password')
+  openRessetPasswordForm(
+    @Query('reset_token')
+    reset_token: string,
+  ) {
+    return { token: reset_token };
+  }
+
   @Get('private')
   @UseGuards(AuthGuard())
   testPrivateRoute(
@@ -50,6 +95,33 @@ export class AuthController {
       user,
       roles,
       rawHeaders,
+    };
+  }
+
+  /**endpoint de prueba de control de autorizacion y validacion */
+  //@SetMetadata('roles', ['super-admin', 'super-user'])
+  @Get('private/rol')
+  @RoleProtected(ValidRoles.superUser, ValidRoles.admin, ValidRoles.user)
+  @UseGuards(AuthGuard(), UserRoleGuard)
+  testPrivateRouteByRol(
+    @GetUser()
+    user: Usuario,
+  ) {
+    return {
+      user,
+    };
+  }
+
+  /**endpoint de prueba de control de autorizacion y validacion */
+  //@SetMetadata('roles', ['super-admin', 'super-user'])
+  @Get('private/rol2')
+  @Auth(ValidRoles.superUser, ValidRoles.user)
+  testPrivateRouteByRol2(
+    @GetUser()
+    user: Usuario,
+  ) {
+    return {
+      user,
     };
   }
 
